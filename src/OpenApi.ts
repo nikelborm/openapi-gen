@@ -478,28 +478,30 @@ const commonSource = `const unexpectedStatus = (response: HttpClientResponse.Htt
 
 const clientErrorSource = (
   name: string,
-) => `export interface ${name}Error<Tag extends string, E> {
+) => `export interface ${name}Error<Tag extends string, E> extends Error {
   readonly _tag: Tag
   readonly request: HttpClientRequest.HttpClientRequest
   readonly response: HttpClientResponse.HttpClientResponse
-  readonly cause: E
+  readonly data: E
 }
 
 class ${name}ErrorImpl extends Data.Error<{
   _tag: string
-  cause: any
+  data: any
   request: HttpClientRequest.HttpClientRequest
   response: HttpClientResponse.HttpClientResponse
+  cause: unknown
 }> {}
 
 export const ${name}Error = <Tag extends string, E>(
   tag: Tag,
-  cause: E,
+  data: E,
   response: HttpClientResponse.HttpClientResponse,
 ): ${name}Error<Tag, E> =>
   new ${name}ErrorImpl({
     _tag: tag,
-    cause,
+    data,
+    cause: new Error(JSON.stringify(data)),
     response,
     request: response.request,
   }) as any`
