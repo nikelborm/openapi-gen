@@ -483,15 +483,18 @@ const clientErrorSource = (
   readonly request: HttpClientRequest.HttpClientRequest
   readonly response: HttpClientResponse.HttpClientResponse
   readonly data: E
+  readonly message: string
 }
 
 class ${name}ErrorImpl extends Data.Error<{
   _tag: string
   data: any
+  message: string
   request: HttpClientRequest.HttpClientRequest
   response: HttpClientResponse.HttpClientResponse
-  cause: unknown
-}> {}
+}> {
+  name = "${name}Error"
+}
 
 export const ${name}Error = <Tag extends string, E>(
   tag: Tag,
@@ -501,7 +504,7 @@ export const ${name}Error = <Tag extends string, E>(
   new ${name}ErrorImpl({
     _tag: tag,
     data,
-    cause: new Error(JSON.stringify(data)),
+    message: JSON.stringify(data),
     response,
     request: response.request,
   }) as any`
